@@ -1,0 +1,107 @@
+import tkinter as tk
+from tkinter import ttk, messagebox
+
+def actualizar_etiquetas(event=None):
+    opcion = combo.get()
+    if opcion == "Ca (concentración del ácido)":
+        etiqueta1.config(text="Va (volumen del ácido en mL):")
+        etiqueta2.config(text="Cb (concentración de la base en mol/L):")
+        etiqueta3.config(text="Vb (volumen de la base en mL):")
+    elif opcion == "Va (volumen del ácido)":
+        etiqueta1.config(text="Ca (concentración del ácido en mol/L):")
+        etiqueta2.config(text="Cb (concentración de la base en mol/L):")
+        etiqueta3.config(text="Vb (volumen de la base en mL):")
+    elif opcion == "Cb (concentración de la base)":
+        etiqueta1.config(text="Ca (concentración del ácido en mol/L):")
+        etiqueta2.config(text="Va (volumen del ácido en mL):")
+        etiqueta3.config(text="Vb (volumen de la base en mL):")
+    elif opcion == "Vb (volumen de la base)":
+        etiqueta1.config(text="Ca (concentración del ácido en mol/L):")
+        etiqueta2.config(text="Va (volumen del ácido en mL):")
+        etiqueta3.config(text="Cb (concentración de la base en mol/L):")
+
+def calcular():
+    try:
+        opcion = combo.get()
+        decimales = int(decimales_entry.get())
+        if decimales < 0:
+            raise ValueError("Número de decimales no puede ser negativo.")
+        if opcion == "Ca (concentración del ácido)":
+            Va = float(entrada1.get())
+            Cb = float(entrada2.get())
+            Vb = float(entrada3.get())
+            Ca = (Cb * Vb) / Va
+            resultado.set(f"Ca = {round(Ca, decimales)} mol/L")
+        elif opcion == "Va (volumen del ácido)":
+            Ca = float(entrada1.get())
+            Cb = float(entrada2.get())
+            Vb = float(entrada3.get())
+            Va = (Cb * Vb) / Ca
+            resultado.set(f"Va = {round(Va, decimales)} mL")
+ elif opcion == "Cb (concentración de la base)":
+            Ca = float(entrada1.get())
+            Va = float(entrada2.get())
+            Vb = float(entrada3.get())
+            Cb = (Ca * Va) / Vb
+            resultado.set(f"Cb = {round(Cb, decimales)} mol/L")
+        elif opcion == "Vb (volumen de la base)":
+            Ca = float(entrada1.get())
+            Va = float(entrada2.get())
+            Cb = float(entrada3.get())
+            Vb = (Ca * Va) / Cb
+            resultado.set(f"Vb = {round(Vb, decimales)} mL")
+    except ValueError:
+        messagebox.showerror("Error", "Por favor ingresa valores numéricos válidos y decimales enteros no negativos.")
+    except ZeroDivisionError:
+        messagebox.showerror("Error", "No se puede dividir entre cero.")
+
+# --- INTERFAZ ---
+ventana = tk.Tk()
+ventana.title("Calculadora Titulación")
+ventana.geometry("450x370")
+
+tk.Label(ventana, text="Selecciona la variable a calcular:").pack(pady=5)
+
+combo = ttk.Combobox(ventana, values=[
+    "Ca (concentración del ácido)",
+    "Va (volumen del ácido)",
+    "Cb (concentración de la base)",
+    "Vb (volumen de la base)"
+])
+combo.current(0)
+combo.pack()
+combo.bind("<<ComboboxSelected>>", actualizar_etiquetas)
+
+frame = tk.Frame(ventana)
+frame.pack(pady=10)
+
+etiqueta1 = tk.Label(frame, text="Va (volumen del ácido en mL):")
+etiqueta1.grid(row=0, column=0, sticky="e")
+entrada1 = tk.Entry(frame)
+entrada1.grid(row=0, column=1, padx=5, pady=5)
+
+etiqueta2 = tk.Label(frame, text="Cb (concentración de la base en mol/L):")
+etiqueta2.grid(row=1, column=0, sticky="e")
+entrada2 = tk.Entry(frame)
+entrada2.grid(row=1, column=1, padx=5, pady=5)
+
+etiqueta3 = tk.Label(frame, text="Vb (volumen de la base en mL):")
+etiqueta3.grid(row=2, column=0, sticky="e")
+entrada3 = tk.Entry(frame)
+entrada3.grid(row=2, column=1, padx=5, pady=5)
+
+# Entrada para número de decimales
+tk.Label(ventana, text="Número de decimales:").pack()
+decimales_entry = tk.Entry(ventana)
+decimales_entry.pack()
+decimales_entry.insert(0, "4")  # Por defecto 4 decimales
+
+boton = tk.Button(ventana, text="Calcular", command=calcular)
+boton.pack(pady=10)
+
+resultado = tk.StringVar()
+tk.Label(ventana, textvariable=resultado, font=("Arial", 14)).pack(pady=5)
+
+actualizar_etiquetas()
+
+ventana.mainloop()
